@@ -1,0 +1,27 @@
+export const dummyData = {
+    "_id": {
+      "$oid": "674d2f0b7add7cc1fd37b572"
+    },
+    "WAP013": -79,
+    "WAP014": -79,
+    "WAP023": -83,
+    "WAP024": -78,
+    "WAP029": -62,
+    "WAP030": -62,
+    "WAP041": -79,
+    "WAP042": -84,
+    "WAP045": -84,
+    "WAP046": -85,
+    "WAP155": -77,
+    "WAP156": -79,
+    "WAP225": -68,
+    "WAP253": -68,
+    "LONGITUDE": -7641.499303368108,
+    "LATITUDE": 4864922.399177807,
+    "FLOOR": 2,
+    "BUILDINGID": 0,
+    "SPACEID": 0,
+    "RELATIVEPOSITION": 0,
+    "USERID": 0,
+    "PHONEID": 2,
+}
