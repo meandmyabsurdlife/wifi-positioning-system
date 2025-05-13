@@ -1,6 +1,5 @@
 import express from "express";
 
-import { protectRoute } from "../middleware/protectRoute.js";
 import { predictRSS } from "../controllers/positioning.contollers.js"
 
 const router = express.Router();

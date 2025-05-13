@@ -7,35 +7,38 @@ import TestData from "../models/testdata.model.js";
 
 export const predictRSS = async (req, res) => {
     try {
+        console.time('Prediction Time'); // Mulai perhitungan waktu
+
         const randomData  = await TestData.aggregate([{ $sample: { size: 1 } }]);
 
         const data = randomData[0];
         
         if (!data) {
+            console.timeEnd('Prediction Time'); // Akhiri waktu jika tidak ada data
             return res.status(404).json({ message: "No dummy data found in database" });
         }
 
         // Proses data test
-        const processedTestData = processRSSData(data, accessPoints);
+        // const processedTestData = processRSSData(data, accessPoints);
 
         // Run the Python script asynchronously using spawn
-        const childpythonProcess = spawn('python', ['machine_learning/test.py', JSON.stringify(processedTestData)]);
+        const childpythonProcess = spawn('python', ['machine_learning/predict.py', JSON.stringify(data)]); // ubah dari processedData
 
         let pythonOutput = "";
 
         // print printed data in Python Script to Node Terminal
         childpythonProcess.stdout.on('data', (data) => {
-            //console.log(`stdout: ${data}`);
             pythonOutput += data.toString();
+            
         });
         // print error in Python Script to Node Terminal
         childpythonProcess.stderr.on('data', (data) => {
-            //console.log(`stderr: ${data}`);
             console.error(`stderr: ${data}`);
         });
 
         childpythonProcess.on('close', (code) => {
-            //console.log(`close: ${code}`);
+            console.timeEnd('Prediction Time'); // Akhiri penghitungan waktu
+
             if (code !== 0) {
                 console.error(`Python script exited with code ${code}`);
                 return res.status(500).json({ message: "Error in prediction script" });
@@ -63,8 +66,6 @@ export const predictRSS = async (req, res) => {
                 return res.status(500).json({ message: "Invalid JSON received from Python", error });
             }
         });
-
-        //res.status(500).json({ message: 'Berhasil' });
 
     } catch (error) {
         console.error('error in predictRSS function:', error.message);

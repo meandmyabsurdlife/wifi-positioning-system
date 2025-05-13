@@ -1,4 +1,3 @@
-import './App.css'
 import PredictionPage from './pages/PredictionPage';
 
 function App() {
