@@ -15,14 +15,15 @@ data_json.pop("_id", None) # Hilangkan kolom _id
 # Ubah ke DataFrame
 df = pd.DataFrame.from_dict(data_json, orient='index').T
 # Ubah nilai 100 ke -105
-df.replace(100, -105, inplace=True)
+# df.replace(100, -105, inplace=True)
 # Tambahkan kolom UNIQUEID
-df['UNIQUEID'] = df['BUILDINGID']*1000 + df['SPACEID']
+# df['UNIQUEID'] = df['BUILDINGID']*1000 + df['SPACEID']
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-model_path = os.path.join(current_dir, "model_rfc_alternative1.pkl")
+model_path = os.path.join(current_dir, "final_rfc_model.pkl")
 features_path = os.path.join(current_dir, "features.json")
+print(f"Pemanggilan model berhasil, model yang digunakan: {model_path}", file=sys.stderr)
 
 with open(features_path, 'r') as f:
     features = json.load(f)
@@ -30,7 +31,7 @@ with open(features_path, 'r') as f:
 # Pilih kolom yang diawali dengan 'WAP' dan kolom 'TIMESTAMP'
 X = df.filter(regex='^(WAP|TIMESTAMP)', axis=1)
 X = X.reindex(columns=features, fill_value=100)
-y = df[['UNIQUEID','FLOOR','RELATIVEPOSITION']]#y = df[['FLOOR','BUILDINGID','SPACEID','RELATIVEPOSITION']]
+y = df[['FLOOR','BUILDINGID','SPACEID','RELATIVEPOSITION']] #y = df[['UNIQUEID','FLOOR','RELATIVEPOSITION']]
 # print(y)
 
 # Load model
@@ -42,6 +43,13 @@ y_pred = loaded_model.predict(X)
 # print(y_pred)
 
 # Mengembalikan hasil prediksi dalam format JSON yang lebih deskriptif
+result = {
+    "predicted_floor": int(y_pred[0][0]),
+    "predicted_building_id": int(y_pred[0][1]),
+    "predicted_space_id": int(y_pred[0][2]),
+    "predicted_relative_position": int(y_pred[0][3]),
+}
+'''
 predicted_building_id = int(y_pred[0][0]) // 1000
 predicted_floor = int(y_pred[0][1])
 predicted_space_id = int(y_pred[0][0]) % 1000
@@ -53,6 +61,7 @@ result = {
     "predicted_space_id": predicted_space_id,
     "predicted_relative_position": predicted_relative_position,
 }
+'''
 
 # Pastikan hasilnya valid JSON
 print(json.dumps(result))  # Mengirimkan hasil prediksi sebagai JSON
